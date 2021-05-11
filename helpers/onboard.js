@@ -44,15 +44,14 @@ export default function Web3ContextProvider({ children }) {
     onboard
       .walletSelect()
       .catch(console.error)
-      .then(onboard.walletCheck)
+      .then((res) => res && onboard.walletCheck)
       .then(setActive)
       .then(() => setPending(false));
   }, [onboard, setActive]);
 
   const deactivate = useCallback(() => {
     setPending(true);
-    onboard
-      .walletReset()
+    onboard.walletReset();
     setPending(false);
   }, [onboard, setActive]);
 

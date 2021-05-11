@@ -1,6 +1,5 @@
 module.exports = {
   reactStrictMode: true,
-  assetPrefix: ".",
   env: {
     IPFS: process.env.IPFS === "true" ? "true" : "false",
     COMMIT_SHA:

@@ -9,9 +9,6 @@ import { ArrowDownIcon } from "@chakra-ui/icons";
 
 import Header from "../components/Header";
 
-import { useWeb3 } from "../helpers/web3";
-import { Container } from "@chakra-ui/layout";
-
 export default function Home() {
   const [page, setPage] = useState("wrap");
   const isWrap = useMemo(() => page === "wrap", [page]);
@@ -22,7 +19,6 @@ export default function Home() {
 
   return (
     <Box
-      height="100vh"
       minH="100vh"
       bgGradient="linear(to-l, pink.400,blue.500)"
       color="white"
@@ -33,7 +29,14 @@ export default function Home() {
       <Stack spacing={10}>
         <Header />
         <Center>
-          <Box bgColor="whiteAlpha.600" p="5" minW="lg" borderRadius="8">
+          <Box
+            bgColor="whiteAlpha.600"
+            p="5"
+            w="100%"
+            maxW="lg"
+            borderRadius="8"
+            mx="5"
+          >
             <Stack spacing={6}>
               <Center>
                 <ButtonGroup isAttached>
@@ -42,7 +45,7 @@ export default function Home() {
                     fontSize="xl"
                     opacity={isWrap ? 0.8 : 0.4}
                     onClick={() => setPage("wrap")}
-                    w="40"
+                    w={["32", "40"]}
                   >
                     Wrap
                   </Button>
@@ -51,27 +54,29 @@ export default function Home() {
                     fontSize="xl"
                     opacity={isUnwrap ? 0.8 : 0.4}
                     onClick={() => setPage("unwrap")}
-                    w="40"
+                    w={["32", "40"]}
                   >
                     Unwrap
                   </Button>
                 </ButtonGroup>
               </Center>
               <VStack spacing={0} color="black" color="black">
-                <Box w="100%" bg="white" p={6} borderRadius={8} boxShadow="lg">
+                <Box w="100%" bg="white" p={4} borderRadius={8} boxShadow="lg">
                   <HStack spacing={5}>
-                    <Image
-                      src={`/tokens/${fromToken}.png`}
-                      width="64"
-                      height="64"
-                    />
+                    <Box display={["none", "block"]}>
+                      <Image
+                        src={`/tokens/${fromToken}.png`}
+                        width="64"
+                        height="64"
+                      />
+                    </Box>
                     <Stack spacing={1}>
                       <Text fontSize="sm">Available {fromToken}</Text>
-                      <Text fontSize="2xl">0.123378732893789</Text>
+                      <Text fontSize={["xl", "2xl"]}>0.88888888888888888</Text>
                     </Stack>
                   </HStack>
                 </Box>
-                <Box w="90%" bg="whiteAlpha.700" px={6} py={3} boxShadow="sm">
+                <Box w="90%" bg="whiteAlpha.700" px={4} py={3} boxShadow="sm">
                   <VStack>
                     <ArrowDownIcon />
                     <Box w="100%" bg="white" borderRadius={8} boxShadow="lg">
@@ -93,16 +98,18 @@ export default function Home() {
                     <ArrowDownIcon />
                   </VStack>
                 </Box>
-                <Box w="100%" bg="white" p={6} borderRadius={8} boxShadow="lg">
+                <Box w="100%" bg="white" p={4} borderRadius={8} boxShadow="lg">
                   <HStack spacing={5}>
-                    <Image
-                      src={`/tokens/${toToken}.png`}
-                      width="64"
-                      height="64"
-                    />
+                    <Box display={["none", "block"]}>
+                      <Image
+                        src={`/tokens/${toToken}.png`}
+                        width="64"
+                        height="64"
+                      />
+                    </Box>
                     <Stack spacing={1}>
                       <Text fontSize="sm">Received {toToken}</Text>
-                      <Text fontSize="2xl">0.123378732893789</Text>
+                      <Text fontSize={["xl", "2xl"]}>0.88888888888888888</Text>
                     </Stack>
                   </HStack>
                 </Box>
