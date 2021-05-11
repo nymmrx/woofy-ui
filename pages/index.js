@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
 
@@ -28,6 +28,7 @@ import NumericInput from "../components/NumericInput";
 const YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
 const WOOFY = "0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6";
 const TEN = new BigNumber(10);
+const MAX = new BigNumber(2).pow(256).minus(1);
 
 export default function Home() {
   const [page, setPage] = useState("wrap");
@@ -38,6 +39,7 @@ export default function Home() {
 
   const [userBalanceYfi, setUserBalanceYfi] = useState(0);
   const [userBalanceWoofy, setUserBalanceWoofy] = useState(0);
+  const [userAllowanceYfi, setUserAllowanceYfi] = useState(0);
 
   const yfi = useMemo(
     () => ({
@@ -46,6 +48,7 @@ export default function Home() {
       address: YFI,
       decimals: 18,
       balance: new BigNumber(userBalanceYfi.toString()),
+      allowance: new BigNumber(userAllowanceYfi.toString()),
     }),
     [userBalanceYfi]
   );
@@ -57,6 +60,7 @@ export default function Home() {
       image: "/tokens/WOOFY.png",
       decimals: 9,
       balance: new BigNumber(userBalanceWoofy.toString()),
+      allowance: MAX,
     }),
     [userBalanceWoofy]
   );
@@ -73,17 +77,29 @@ export default function Home() {
       new BigNumber(
         (value.endsWith(".") ? value.slice(0, -1) : value) || "0"
       ).times(TEN.pow(fromToken.decimals)),
-    [value]
+    [value, fromToken]
   );
 
-  const inputInvalid = useMemo(
-    () => input.gt(fromToken.balance),
+  const inputValid = useMemo(
+    () => !active || !input.gt(fromToken.balance),
+    [active, input, fromToken]
+  );
+
+  const needsApproval = useMemo(
+    () => fromToken.name !== "WOOFY",
+    [active, input, fromToken]
+  );
+
+  console.log(fromToken, needsApproval);
+
+  const approveValid = useMemo(
+    () => input.lte(fromToken.balance) && input.gt(0),
     [input, fromToken]
   );
 
-  const swapInvalid = useMemo(
-    () => !active || inputInvalid,
-    [active, inputInvalid]
+  const swapValid = useMemo(
+    () => input.lte(fromToken.allowance) && approveValid,
+    [input, fromToken, approveValid]
   );
 
   const output = useMemo(() => input, [input]);
@@ -95,11 +111,23 @@ export default function Home() {
 
       yfiContract.balanceOf(account).then(setUserBalanceYfi);
       woofyContract.balanceOf(account).then(setUserBalanceWoofy);
+
+      yfiContract.allowance(account, WOOFY).then(setUserAllowanceYfi);
     } else {
       setUserBalanceYfi(0);
       setUserBalanceWoofy(0);
+      setUserAllowanceYfi(0);
     }
   }, [active, library, account]);
+
+  const approve = useCallback(() => {
+    const fromContract = new Contract(
+      fromToken.address,
+      abiErc20,
+      library.getSigner(account)
+    );
+    fromContract.approve(toToken.address);
+  }, [fromToken, toToken, library, account]);
 
   return (
     <Box
@@ -131,7 +159,7 @@ export default function Home() {
                       onClick={() => setPage("wrap")}
                       w={["32", "40"]}
                     >
-                      Wrap
+                      Woof
                     </Button>
                     <Button
                       colorScheme="blue"
@@ -140,7 +168,7 @@ export default function Home() {
                       onClick={() => setPage("unwrap")}
                       w={["32", "40"]}
                     >
-                      Unwrap
+                      Unwoof
                     </Button>
                   </ButtonGroup>
                 </Center>
@@ -152,29 +180,27 @@ export default function Home() {
                     borderRadius={8}
                     boxShadow="lg"
                   >
-                    <HStack spacing={5}>
-                      <Image src={fromToken.image} width="32" height="32" />
-                      <Stack spacing={1}>
-                        <Text fontSize="sm">Available {fromToken.name}</Text>
-                        <Text fontSize="2xl">
-                          {formatUnits(fromToken.balance, fromToken.decimals)}
-                        </Text>
-                      </Stack>
-                    </HStack>
+                    <Stack spacing={2}>
+                      <Text fontSize="sm">
+                        <span>Balance: </span>
+                        {fromToken.balance.gt(0)
+                          ? formatUnits(fromToken.balance, fromToken.decimals)
+                          : "-"}
+                      </Text>
+                      <NumericInput
+                        value={value}
+                        onChange={setValue}
+                        invalid={!inputValid}
+                        element={
+                          <Image src={fromToken.image} width="32" height="32" />
+                        }
+                      />
+                    </Stack>
                   </Box>
                   <Box w="90%" bg="whiteAlpha.700" px={4} py={3} boxShadow="sm">
-                    <VStack>
+                    <Center>
                       <ArrowDownIcon />
-                      <Box w="100%" bg="white" borderRadius={8} boxShadow="lg">
-                        <NumericInput
-                          value={value}
-                          onChange={setValue}
-                          invalid={inputInvalid}
-                          token={fromToken.name}
-                        />
-                      </Box>
-                      <ArrowDownIcon />
-                    </VStack>
+                    </Center>
                   </Box>
                   <Box
                     w="100%"
@@ -183,24 +209,44 @@ export default function Home() {
                     borderRadius={8}
                     boxShadow="lg"
                   >
-                    <HStack spacing={5}>
-                      <Image src={toToken.image} width="32" height="32" />
-                      <Box overflow="hidden">
-                        <Text fontSize="sm">Received {toToken.name}</Text>
-                        <Text fontSize="2xl" overflow="hidden">
-                          {formatUnits(output, toToken.decimals)}
-                        </Text>
-                      </Box>
-                    </HStack>
+                    <Stack spacing={2}>
+                      <Text fontSize="sm">
+                        <span>Balance: </span>
+                        {toToken.balance.gt(0)
+                          ? formatUnits(fromToken.balance, fromToken.decimals)
+                          : "-"}
+                      </Text>
+                      <NumericInput
+                        disabled
+                        value={formatUnits(output, toToken.decimals)}
+                        token={toToken.name}
+                        element={
+                          <Image src={toToken.image} width="32" height="32" />
+                        }
+                      />
+                    </Stack>
                   </Box>
                 </VStack>
-                <Button
-                  colorScheme="blackAlpha"
-                  size="lg"
-                  disabled={swapInvalid}
-                >
-                  Swap
-                </Button>
+                <HStack width="100%">
+                  {needsApproval && (
+                    <Button
+                      width="100%"
+                      colorScheme="blackAlpha"
+                      size="lg"
+                      disabled={!approveValid}
+                    >
+                      Approve
+                    </Button>
+                  )}
+                  <Button
+                    width="100%"
+                    colorScheme="blackAlpha"
+                    size="lg"
+                    disabled={!swapValid}
+                  >
+                    {isWrap ? "Woof" : "Unwoof"}
+                  </Button>
+                </HStack>
               </Stack>
             </Box>
           </Container>

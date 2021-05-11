@@ -8,11 +8,17 @@ function escape(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export default function NumericInput({ value, onChange, invalid, token }) {
+export default function NumericInput({
+  value,
+  onChange,
+  invalid,
+  disabled,
+  element,
+}) {
   const onChangeFilter = useCallback(
     (event) => {
       const val = event.target.value.replace(/,/g, ".");
-      if (val === "" || inputRegex.test(escape(val))) {
+      if ((val === "" || inputRegex.test(escape(val))) && !disabled) {
         onChange(val);
       }
     },
@@ -35,16 +41,17 @@ export default function NumericInput({ value, onChange, invalid, token }) {
         maxLength={79}
         spellCheck="false"
         fontSize="xl"
+        readOnly={disabled}
         isInvalid={invalid || false}
-        pr="24"
+        pr="48px"
       />
       <InputRightElement
-        width="24"
+        width="48px"
         pointerEvents="none"
         color="gray.600"
         fontSize="1.2em"
         height="14"
-        children={<Text>{token}</Text>}
+        children={element}
       />
     </InputGroup>
   );
