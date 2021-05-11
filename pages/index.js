@@ -14,9 +14,10 @@ import {
   HStack,
   Container,
   Link,
+  Flex,
 } from "@chakra-ui/layout";
 import { Button, ButtonGroup } from "@chakra-ui/button";
-import { ArrowDownIcon } from "@chakra-ui/icons";
+import { ArrowDownIcon, ArrowRightIcon, Icon } from "@chakra-ui/icons";
 
 import Header from "../components/Header";
 
@@ -218,143 +219,184 @@ export default function Home() {
         <Header />
         <Center>
           <Container>
-            <Box
-              bgColor="whiteAlpha.600"
-              p="5"
-              w="100%"
-              maxW="lg"
-              borderRadius="8"
-            >
-              <Stack spacing={6}>
-                <Center>
-                  <ButtonGroup isAttached>
-                    <Button
-                      colorScheme="pink"
-                      fontSize="xl"
-                      opacity={isWrap ? 0.8 : 0.4}
-                      onClick={() => setPage("wrap")}
-                      w={["32", "40"]}
+            <Stack>
+              <Box
+                bgColor="whiteAlpha.600"
+                p="5"
+                w="100%"
+                maxW="lg"
+                borderRadius="8"
+              >
+                <Stack spacing={6}>
+                  <Center>
+                    <ButtonGroup isAttached>
+                      <Button
+                        colorScheme="pink"
+                        fontSize="xl"
+                        opacity={isWrap ? 0.8 : 0.4}
+                        onClick={() => setPage("wrap")}
+                        w={["32", "40"]}
+                      >
+                        Woof
+                      </Button>
+                      <Button
+                        colorScheme="blue"
+                        fontSize="xl"
+                        opacity={isUnwrap ? 0.8 : 0.4}
+                        onClick={() => setPage("unwrap")}
+                        w={["32", "40"]}
+                      >
+                        Unwoof
+                      </Button>
+                    </ButtonGroup>
+                  </Center>
+                  <VStack spacing={0} color="black" color="black">
+                    <Box
+                      w="100%"
+                      bg="white"
+                      p={4}
+                      borderRadius={8}
+                      boxShadow="lg"
                     >
-                      Woof
-                    </Button>
-                    <Button
-                      colorScheme="blue"
-                      fontSize="xl"
-                      opacity={isUnwrap ? 0.8 : 0.4}
-                      onClick={() => setPage("unwrap")}
-                      w={["32", "40"]}
+                      <Stack spacing={2}>
+                        <HStack>
+                          <Box flexGrow={1}>
+                            <Text fontSize="sm">
+                              <span>Balance: </span>
+                              <Link onClick={max}>
+                                {fromToken.balance.gt(0)
+                                  ? formatUnits(
+                                      fromToken.balance,
+                                      fromToken.decimals
+                                    )
+                                  : "-"}
+                              </Link>
+                            </Text>
+                          </Box>
+                          <Box>
+                            <Text fontSize="sm">
+                              <Link onClick={() => addToken(fromToken)}>
+                                Add Token
+                              </Link>
+                            </Text>
+                          </Box>
+                        </HStack>
+                        <NumericInput
+                          value={value}
+                          onChange={setValue}
+                          invalid={!inputValid}
+                          element={
+                            <Image
+                              src={fromToken.image}
+                              width="32"
+                              height="32"
+                            />
+                          }
+                        />
+                      </Stack>
+                    </Box>
+                    <Box
+                      w="90%"
+                      bg="whiteAlpha.700"
+                      px={4}
+                      py={3}
+                      boxShadow="sm"
                     >
-                      Unwoof
-                    </Button>
-                  </ButtonGroup>
-                </Center>
-                <VStack spacing={0} color="black" color="black">
-                  <Box
-                    w="100%"
-                    bg="white"
-                    p={4}
-                    borderRadius={8}
-                    boxShadow="lg"
-                  >
-                    <Stack spacing={2}>
-                      <HStack>
-                        <Box flexGrow={1}>
-                          <Text fontSize="sm">
-                            <span>Balance: </span>
-                            <Link onClick={max}>
-                              {fromToken.balance.gt(0)
-                                ? formatUnits(
-                                    fromToken.balance,
-                                    fromToken.decimals
-                                  )
+                      <Center>
+                        <ArrowDownIcon />
+                      </Center>
+                    </Box>
+                    <Box
+                      w="100%"
+                      bg="white"
+                      p={4}
+                      borderRadius={8}
+                      boxShadow="lg"
+                    >
+                      <Stack spacing={2}>
+                        <HStack>
+                          <Box flexGrow={1}>
+                            <Text fontSize="sm">
+                              <span>Balance: </span>
+                              {toToken.balance.gt(0)
+                                ? formatUnits(toToken.balance, toToken.decimals)
                                 : "-"}
-                            </Link>
-                          </Text>
-                        </Box>
-                        <Box>
-                          <Text fontSize="sm">
-                            <Link onClick={() => addToken(fromToken)}>
-                              Add Token
-                            </Link>
-                          </Text>
-                        </Box>
-                      </HStack>
-                      <NumericInput
-                        value={value}
-                        onChange={setValue}
-                        invalid={!inputValid}
-                        element={
-                          <Image src={fromToken.image} width="32" height="32" />
-                        }
-                      />
-                    </Stack>
-                  </Box>
-                  <Box w="90%" bg="whiteAlpha.700" px={4} py={3} boxShadow="sm">
-                    <Center>
-                      <ArrowDownIcon />
-                    </Center>
-                  </Box>
-                  <Box
-                    w="100%"
-                    bg="white"
-                    p={4}
-                    borderRadius={8}
-                    boxShadow="lg"
-                  >
-                    <Stack spacing={2}>
-                      <HStack>
-                        <Box flexGrow={1}>
-                          <Text fontSize="sm">
-                            <span>Balance: </span>
-                            {toToken.balance.gt(0)
-                              ? formatUnits(toToken.balance, toToken.decimals)
-                              : "-"}
-                          </Text>
-                        </Box>
-                        <Box>
-                          <Text fontSize="sm">
-                            <Link onClick={() => addToken(toToken)}>
-                              Add Token
-                            </Link>
-                          </Text>
-                        </Box>
-                      </HStack>
-                      <NumericInput
-                        disabled
-                        value={formatUnits(output, toToken.decimals)}
-                        element={
-                          <Image src={toToken.image} width="32" height="32" />
-                        }
-                      />
-                    </Stack>
-                  </Box>
-                </VStack>
-                <HStack width="100%">
-                  {needsApproval && (
+                            </Text>
+                          </Box>
+                          <Box>
+                            <Text fontSize="sm">
+                              <Link onClick={() => addToken(toToken)}>
+                                Add Token
+                              </Link>
+                            </Text>
+                          </Box>
+                        </HStack>
+                        <NumericInput
+                          disabled
+                          value={formatUnits(output, toToken.decimals)}
+                          element={
+                            <Image src={toToken.image} width="32" height="32" />
+                          }
+                        />
+                      </Stack>
+                    </Box>
+                  </VStack>
+                  <HStack width="100%">
+                    {needsApproval && (
+                      <Button
+                        width="100%"
+                        colorScheme="blackAlpha"
+                        size="lg"
+                        disabled={!approveValid}
+                        isLoading={isApproving}
+                        onClick={approve}
+                      >
+                        Approve
+                      </Button>
+                    )}
                     <Button
                       width="100%"
                       colorScheme="blackAlpha"
                       size="lg"
-                      disabled={!approveValid}
-                      isLoading={isApproving}
-                      onClick={approve}
+                      disabled={!swapValid}
+                      isLoading={isSwapping}
+                      onClick={swap}
                     >
-                      Approve
+                      {isWrap ? "Woof" : "Unwoof"}
                     </Button>
-                  )}
-                  <Button
-                    width="100%"
-                    colorScheme="blackAlpha"
-                    size="lg"
-                    disabled={!swapValid}
-                    isLoading={isSwapping}
-                    onClick={swap}
-                  >
-                    {isWrap ? "Woof" : "Unwoof"}
-                  </Button>
-                </HStack>
-              </Stack>
-            </Box>
+                  </HStack>
+                </Stack>
+              </Box>
+              <Box
+                bgColor="whiteAlpha.300"
+                p="5"
+                w="100%"
+                maxW="lg"
+                borderRadius="8"
+              >
+                <Stack spacing={6}>
+                  <HStack wrap="wrap" spacing={0}>
+                    <Box flexGrow={1}>
+                      <Text>
+                        Trade on{" "}
+                        <Link href="https://app.sushi.com/add/ETH/0xD0660cD418a64a1d44E9214ad8e459324D8157f1">
+                          🍣 SUSHI
+                        </Link>{" "}
+                        &{" "}
+                        <Link href="https://app.uniswap.org/#/swap?outputCurrency=0xd0660cd418a64a1d44e9214ad8e459324d8157f1">
+                          🦄 UNI
+                        </Link>
+                      </Text>
+                    </Box>
+                    <Box>
+                      <Text>
+                        by <Link href="https://yearn.finance">🔵</Link> with 💙
+                      </Text>
+                    </Box>
+                  </HStack>
+                </Stack>
+              </Box>
+            </Stack>
           </Container>
         </Center>
       </Stack>
