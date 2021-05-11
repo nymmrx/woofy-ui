@@ -1,0 +1,28 @@
+{
+  "name": "woofy",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^1.0.13",
+    "@chakra-ui/react": "^1.6.1",
+    "@chakra-ui/system": "^1.6.5",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@ethersproject/contracts": "^5.1.1",
+    "@ethersproject/providers": "^5.1.2",
+    "@fontsource/inter": "^4.3.0",
+    "bnc-onboard": "^1.25.0",
+    "framer-motion": "^4",
+    "next": "10.2.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-0"
+  }
+}
