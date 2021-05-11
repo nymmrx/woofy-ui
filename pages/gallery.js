@@ -18,7 +18,7 @@ export default function Home() {
         <Header />
         <Center>
           <Container maxW="container.lg">
-            <SimpleGrid minChildWidth="250px" spacing="40px">
+            <SimpleGrid columns={[2, 3]} spacing="40px">
               <Box maxH="md">
                 <div className="frame">
                   <img src="/artwork/andre.png" />
@@ -60,6 +60,7 @@ export default function Home() {
             </SimpleGrid>
           </Container>
         </Center>
+        <Box p="5"></Box>
       </Stack>
     </Box>
   );

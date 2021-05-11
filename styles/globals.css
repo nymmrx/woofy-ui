@@ -72,3 +72,7 @@ a {
   right: -2.5vmin;
   top: -2.5vmin;
 }
+
+.bn-onboard-modal {
+  z-index: 1000;
+}

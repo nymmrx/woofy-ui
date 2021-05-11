@@ -5,7 +5,15 @@ import Head from "next/head";
 import { Contract } from "@ethersproject/contracts";
 import { BigNumber } from "bignumber.js";
 
-import { Text, Box, Stack, Center, VStack, HStack } from "@chakra-ui/layout";
+import {
+  Text,
+  Box,
+  Stack,
+  Center,
+  VStack,
+  HStack,
+  Container,
+} from "@chakra-ui/layout";
 import { Button, ButtonGroup } from "@chakra-ui/button";
 import { ArrowDownIcon } from "@chakra-ui/icons";
 
@@ -105,84 +113,97 @@ export default function Home() {
       <Stack spacing={10}>
         <Header />
         <Center>
-          <Box
-            bgColor="whiteAlpha.600"
-            p="5"
-            w="100%"
-            maxW="lg"
-            borderRadius="8"
-            mx="5"
-          >
-            <Stack spacing={6}>
-              <Center>
-                <ButtonGroup isAttached>
-                  <Button
-                    colorScheme="pink"
-                    fontSize="xl"
-                    opacity={isWrap ? 0.8 : 0.4}
-                    onClick={() => setPage("wrap")}
-                    w={["32", "40"]}
+          <Container>
+            <Box
+              bgColor="whiteAlpha.600"
+              p="5"
+              w="100%"
+              maxW="lg"
+              borderRadius="8"
+            >
+              <Stack spacing={6}>
+                <Center>
+                  <ButtonGroup isAttached>
+                    <Button
+                      colorScheme="pink"
+                      fontSize="xl"
+                      opacity={isWrap ? 0.8 : 0.4}
+                      onClick={() => setPage("wrap")}
+                      w={["32", "40"]}
+                    >
+                      Wrap
+                    </Button>
+                    <Button
+                      colorScheme="blue"
+                      fontSize="xl"
+                      opacity={isUnwrap ? 0.8 : 0.4}
+                      onClick={() => setPage("unwrap")}
+                      w={["32", "40"]}
+                    >
+                      Unwrap
+                    </Button>
+                  </ButtonGroup>
+                </Center>
+                <VStack spacing={0} color="black" color="black">
+                  <Box
+                    w="100%"
+                    bg="white"
+                    p={4}
+                    borderRadius={8}
+                    boxShadow="lg"
                   >
-                    Wrap
-                  </Button>
-                  <Button
-                    colorScheme="blue"
-                    fontSize="xl"
-                    opacity={isUnwrap ? 0.8 : 0.4}
-                    onClick={() => setPage("unwrap")}
-                    w={["32", "40"]}
+                    <HStack spacing={5}>
+                      <Image src={fromToken.image} width="32" height="32" />
+                      <Stack spacing={1}>
+                        <Text fontSize="sm">Available {fromToken.name}</Text>
+                        <Text fontSize="2xl">
+                          {formatUnits(fromToken.balance, fromToken.decimals)}
+                        </Text>
+                      </Stack>
+                    </HStack>
+                  </Box>
+                  <Box w="90%" bg="whiteAlpha.700" px={4} py={3} boxShadow="sm">
+                    <VStack>
+                      <ArrowDownIcon />
+                      <Box w="100%" bg="white" borderRadius={8} boxShadow="lg">
+                        <NumericInput
+                          value={value}
+                          onChange={setValue}
+                          invalid={inputInvalid}
+                          token={fromToken.name}
+                        />
+                      </Box>
+                      <ArrowDownIcon />
+                    </VStack>
+                  </Box>
+                  <Box
+                    w="100%"
+                    bg="white"
+                    p={4}
+                    borderRadius={8}
+                    boxShadow="lg"
                   >
-                    Unwrap
-                  </Button>
-                </ButtonGroup>
-              </Center>
-              <VStack spacing={0} color="black" color="black">
-                <Box w="100%" bg="white" p={4} borderRadius={8} boxShadow="lg">
-                  <HStack spacing={5}>
-                    <Box display={["none", "block"]}>
-                      <Image src={fromToken.image} width="64" height="64" />
-                    </Box>
-                    <Stack spacing={1}>
-                      <Text fontSize="sm">Available {fromToken.name}</Text>
-                      <Text fontSize="2xl">
-                        {formatUnits(fromToken.balance, fromToken.decimals)}
-                      </Text>
-                    </Stack>
-                  </HStack>
-                </Box>
-                <Box w="90%" bg="whiteAlpha.700" px={4} py={3} boxShadow="sm">
-                  <VStack>
-                    <ArrowDownIcon />
-                    <Box w="100%" bg="white" borderRadius={8} boxShadow="lg">
-                      <NumericInput
-                        value={value}
-                        onChange={setValue}
-                        invalid={inputInvalid}
-                        token={fromToken.name}
-                      />
-                    </Box>
-                    <ArrowDownIcon />
-                  </VStack>
-                </Box>
-                <Box w="100%" bg="white" p={4} borderRadius={8} boxShadow="lg">
-                  <HStack spacing={5}>
-                    <Box display={["none", "block"]}>
-                      <Image src={toToken.image} width="64" height="64" />
-                    </Box>
-                    <Box overflow="hidden">
-                      <Text fontSize="sm">Received {toToken.name}</Text>
-                      <Text fontSize="2xl" overflow="hidden">
-                        {formatUnits(output, toToken.decimals)}
-                      </Text>
-                    </Box>
-                  </HStack>
-                </Box>
-              </VStack>
-              <Button colorScheme="blackAlpha" size="lg" disabled={swapInvalid}>
-                Swap
-              </Button>
-            </Stack>
-          </Box>
+                    <HStack spacing={5}>
+                      <Image src={toToken.image} width="32" height="32" />
+                      <Box overflow="hidden">
+                        <Text fontSize="sm">Received {toToken.name}</Text>
+                        <Text fontSize="2xl" overflow="hidden">
+                          {formatUnits(output, toToken.decimals)}
+                        </Text>
+                      </Box>
+                    </HStack>
+                  </Box>
+                </VStack>
+                <Button
+                  colorScheme="blackAlpha"
+                  size="lg"
+                  disabled={swapInvalid}
+                >
+                  Swap
+                </Button>
+              </Stack>
+            </Box>
+          </Container>
         </Center>
       </Stack>
     </Box>
