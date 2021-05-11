@@ -379,12 +379,8 @@ export default function Home() {
                     <Box flexGrow={1}>
                       <Text>
                         Trade on{" "}
-                        <Link href="https://app.sushi.com/add/ETH/0xD0660cD418a64a1d44E9214ad8e459324D8157f1">
-                          🍣 SUSHI
-                        </Link>{" "}
-                        &{" "}
-                        <Link href="https://app.uniswap.org/#/swap?outputCurrency=0xd0660cd418a64a1d44e9214ad8e459324d8157f1">
-                          🦄 UNI
+                        <Link href="https://matcha.xyz/markets/0xd0660cd418a64a1d44e9214ad8e459324d8157f1/ETH">
+                          🍵 Matcha
                         </Link>
                       </Text>
                     </Box>
