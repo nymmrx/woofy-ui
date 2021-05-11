@@ -39,7 +39,7 @@ export default function Home() {
   const isWrap = useMemo(() => page === "wrap", [page]);
   const isUnwrap = useMemo(() => page === "unwrap", [page]);
 
-  const { active, account, library } = useWeb3();
+  const { active, account, library, provider } = useWeb3();
 
   const [userBalanceYfi, setUserBalanceYfi] = useState(0);
   const [userBalanceWoofy, setUserBalanceWoofy] = useState(0);
@@ -50,7 +50,8 @@ export default function Home() {
 
   const yfi = useMemo(
     () => ({
-      name: "YFI",
+      name: "yearn.finance",
+      symbol: "YFI",
       image: "/tokens/YFI.svg",
       address: YFI,
       decimals: 18,
@@ -62,7 +63,8 @@ export default function Home() {
 
   const woofy = useMemo(
     () => ({
-      name: "WOOFY",
+      name: "Woofy",
+      symbol: "WOOFY",
       address: WOOFY,
       image: "/tokens/WOOFY.svg",
       decimals: 12,
@@ -112,7 +114,7 @@ export default function Home() {
   );
 
   const needsApproval = useMemo(
-    () => fromToken.name !== "WOOFY",
+    () => fromToken.symbol !== "WOOFY",
     [active, input, fromToken]
   );
 
@@ -181,6 +183,28 @@ export default function Home() {
 
   const swap = useMemo(() => (isWrap ? woof : unwoof), [isWrap, woof, unwoof]);
 
+  const addToken = useCallback(
+    (token) => {
+      if (active && provider) {
+        provider
+          .request({
+            method: "wallet_watchAsset",
+            params: {
+              type: "ERC20",
+              options: {
+                address: token.address,
+                symbol: token.symbol,
+                decimals: token.decimals,
+                image: `https://woofy.finance/${token.image}`,
+              },
+            },
+          })
+          .catch(console.error);
+      }
+    },
+    [active, provider]
+  );
+
   return (
     <Box
       minH="100vh"
@@ -233,14 +257,28 @@ export default function Home() {
                     boxShadow="lg"
                   >
                     <Stack spacing={2}>
-                      <Text fontSize="sm">
-                        <span>Balance: </span>
-                        <Link onClick={max}>
-                          {fromToken.balance.gt(0)
-                            ? formatUnits(fromToken.balance, fromToken.decimals)
-                            : "-"}
-                        </Link>
-                      </Text>
+                      <HStack>
+                        <Box flexGrow={1}>
+                          <Text fontSize="sm">
+                            <span>Balance: </span>
+                            <Link onClick={max}>
+                              {fromToken.balance.gt(0)
+                                ? formatUnits(
+                                    fromToken.balance,
+                                    fromToken.decimals
+                                  )
+                                : "-"}
+                            </Link>
+                          </Text>
+                        </Box>
+                        <Box>
+                          <Text fontSize="sm">
+                            <Link onClick={() => addToken(fromToken)}>
+                              Add Token
+                            </Link>
+                          </Text>
+                        </Box>
+                      </HStack>
                       <NumericInput
                         value={value}
                         onChange={setValue}
@@ -264,16 +302,26 @@ export default function Home() {
                     boxShadow="lg"
                   >
                     <Stack spacing={2}>
-                      <Text fontSize="sm">
-                        <span>Balance: </span>
-                        {toToken.balance.gt(0)
-                          ? formatUnits(toToken.balance, toToken.decimals)
-                          : "-"}
-                      </Text>
+                      <HStack>
+                        <Box flexGrow={1}>
+                          <Text fontSize="sm">
+                            <span>Balance: </span>
+                            {toToken.balance.gt(0)
+                              ? formatUnits(toToken.balance, toToken.decimals)
+                              : "-"}
+                          </Text>
+                        </Box>
+                        <Box>
+                          <Text fontSize="sm">
+                            <Link onClick={() => addToken(toToken)}>
+                              Add Token
+                            </Link>
+                          </Text>
+                        </Box>
+                      </HStack>
                       <NumericInput
                         disabled
                         value={formatUnits(output, toToken.decimals)}
-                        token={toToken.name}
                         element={
                           <Image src={toToken.image} width="32" height="32" />
                         }
