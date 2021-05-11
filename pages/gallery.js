@@ -21,7 +21,7 @@ export default function Home() {
             <Grid templateColumns="repeat(3, 1fr)" gap={8}>
               <Box w="100%" maxH="md">
                 <div className="frame">
-                  <img src="/artwork/andre.jpg" alt="Mona Lisa" />
+                  <img src="/artwork/andre.png" />
                 </div>
               </Box>
               <Box w="100%" maxH="md">

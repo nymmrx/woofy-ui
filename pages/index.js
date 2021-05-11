@@ -21,7 +21,12 @@ export default function Home() {
   const toToken = useMemo(() => (isUnwrap ? "YFI" : "WOOFY"), [isUnwrap]);
 
   return (
-    <Box height="100vh" bg="blue.500" color="white">
+    <Box
+      height="100vh"
+      minH="100vh"
+      bgGradient="linear(to-l, pink.400,blue.500)"
+      color="white"
+    >
       <Head>
         <title>woofy</title>
       </Head>
