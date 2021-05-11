@@ -51,7 +51,7 @@ export default function Home() {
   const yfi = useMemo(
     () => ({
       name: "YFI",
-      image: "/tokens/YFI.png",
+      image: "/tokens/YFI.svg",
       address: YFI,
       decimals: 18,
       balance: new BigNumber(userBalanceYfi.toString()),
@@ -64,7 +64,7 @@ export default function Home() {
     () => ({
       name: "WOOFY",
       address: WOOFY,
-      image: "/tokens/WOOFY.png",
+      image: "/tokens/WOOFY.svg",
       decimals: 12,
       balance: new BigNumber(userBalanceWoofy.toString()),
       allowance: MAX,
