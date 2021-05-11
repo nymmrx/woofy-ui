@@ -1,21 +1,97 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
 
+import { Contract } from "@ethersproject/contracts";
+import { BigNumber } from "bignumber.js";
+
 import { Text, Box, Stack, Center, VStack, HStack } from "@chakra-ui/layout";
 import { Button, ButtonGroup } from "@chakra-ui/button";
-import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { ArrowDownIcon } from "@chakra-ui/icons";
 
 import Header from "../components/Header";
+
+import { useWeb3 } from "../helpers/web3";
+import { formatUnits } from "../helpers/units";
+
+import abiErc20 from "../abi/erc20.json";
+import NumericInput from "../components/NumericInput";
+
+const YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
+const WOOFY = "0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6";
+const TEN = new BigNumber(10);
 
 export default function Home() {
   const [page, setPage] = useState("wrap");
   const isWrap = useMemo(() => page === "wrap", [page]);
   const isUnwrap = useMemo(() => page === "unwrap", [page]);
 
-  const fromToken = useMemo(() => (isWrap ? "YFI" : "WOOFY"), [isWrap]);
-  const toToken = useMemo(() => (isUnwrap ? "YFI" : "WOOFY"), [isUnwrap]);
+  const { active, account, library } = useWeb3();
+
+  const [userBalanceYfi, setUserBalanceYfi] = useState(0);
+  const [userBalanceWoofy, setUserBalanceWoofy] = useState(0);
+
+  const yfi = useMemo(
+    () => ({
+      name: "YFI",
+      image: "/tokens/YFI.png",
+      address: YFI,
+      decimals: 18,
+      balance: new BigNumber(userBalanceYfi.toString()),
+    }),
+    [userBalanceYfi]
+  );
+
+  const woofy = useMemo(
+    () => ({
+      name: "WOOFY",
+      address: WOOFY,
+      image: "/tokens/WOOFY.png",
+      decimals: 9,
+      balance: new BigNumber(userBalanceWoofy.toString()),
+    }),
+    [userBalanceWoofy]
+  );
+
+  const fromToken = useMemo(() => (isWrap ? yfi : woofy), [yfi, woofy, isWrap]);
+  const toToken = useMemo(
+    () => (isUnwrap ? yfi : woofy),
+    [yfi, woofy, isUnwrap]
+  );
+
+  const [value, setValue] = useState("");
+  const input = useMemo(
+    () =>
+      new BigNumber(
+        (value.endsWith(".") ? value.slice(0, -1) : value) || "0"
+      ).times(TEN.pow(fromToken.decimals)),
+    [value]
+  );
+
+  const inputInvalid = useMemo(
+    () => input.gt(fromToken.balance),
+    [input, fromToken]
+  );
+
+  const swapInvalid = useMemo(
+    () => !active || inputInvalid,
+    [active, inputInvalid]
+  );
+
+  const output = useMemo(() => input, [input]);
+
+  useEffect(() => {
+    if (active && library && account) {
+      const yfiContract = new Contract(YFI, abiErc20, library);
+      const woofyContract = new Contract(WOOFY, abiErc20, library);
+
+      yfiContract.balanceOf(account).then(setUserBalanceYfi);
+      woofyContract.balanceOf(account).then(setUserBalanceWoofy);
+    } else {
+      setUserBalanceYfi(0);
+      setUserBalanceWoofy(0);
+    }
+  }, [active, library, account]);
 
   return (
     <Box
@@ -64,15 +140,13 @@ export default function Home() {
                 <Box w="100%" bg="white" p={4} borderRadius={8} boxShadow="lg">
                   <HStack spacing={5}>
                     <Box display={["none", "block"]}>
-                      <Image
-                        src={`/tokens/${fromToken}.png`}
-                        width="64"
-                        height="64"
-                      />
+                      <Image src={fromToken.image} width="64" height="64" />
                     </Box>
                     <Stack spacing={1}>
-                      <Text fontSize="sm">Available {fromToken}</Text>
-                      <Text fontSize={["xl", "2xl"]}>0.88888888888888888</Text>
+                      <Text fontSize="sm">Available {fromToken.name}</Text>
+                      <Text fontSize="2xl">
+                        {formatUnits(fromToken.balance, fromToken.decimals)}
+                      </Text>
                     </Stack>
                   </HStack>
                 </Box>
@@ -80,20 +154,12 @@ export default function Home() {
                   <VStack>
                     <ArrowDownIcon />
                     <Box w="100%" bg="white" borderRadius={8} boxShadow="lg">
-                      <InputGroup>
-                        <Input height="14" />
-                        <InputRightElement
-                          pointerEvents="none"
-                          color="gray.600"
-                          fontSize="1.2em"
-                          textAlign="right"
-                          marginRight="5"
-                          width="20"
-                          justifyContent="flex-end"
-                          height="14"
-                          children={<Text>{fromToken}</Text>}
-                        />
-                      </InputGroup>
+                      <NumericInput
+                        value={value}
+                        onChange={setValue}
+                        invalid={inputInvalid}
+                        token={fromToken.name}
+                      />
                     </Box>
                     <ArrowDownIcon />
                   </VStack>
@@ -101,20 +167,18 @@ export default function Home() {
                 <Box w="100%" bg="white" p={4} borderRadius={8} boxShadow="lg">
                   <HStack spacing={5}>
                     <Box display={["none", "block"]}>
-                      <Image
-                        src={`/tokens/${toToken}.png`}
-                        width="64"
-                        height="64"
-                      />
+                      <Image src={toToken.image} width="64" height="64" />
                     </Box>
-                    <Stack spacing={1}>
-                      <Text fontSize="sm">Received {toToken}</Text>
-                      <Text fontSize={["xl", "2xl"]}>0.88888888888888888</Text>
-                    </Stack>
+                    <Box overflow="hidden">
+                      <Text fontSize="sm">Received {toToken.name}</Text>
+                      <Text fontSize="2xl" overflow="hidden">
+                        {formatUnits(output, toToken.decimals)}
+                      </Text>
+                    </Box>
                   </HStack>
                 </Box>
               </VStack>
-              <Button colorScheme="blackAlpha" size="lg">
+              <Button colorScheme="blackAlpha" size="lg" disabled={swapInvalid}>
                 Swap
               </Button>
             </Stack>
