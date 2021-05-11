@@ -13,6 +13,7 @@ import {
   VStack,
   HStack,
   Container,
+  Link,
 } from "@chakra-ui/layout";
 import { Button, ButtonGroup } from "@chakra-ui/button";
 import { ArrowDownIcon } from "@chakra-ui/icons";
@@ -23,10 +24,13 @@ import { useWeb3 } from "../helpers/web3";
 import { formatUnits } from "../helpers/units";
 
 import abiErc20 from "../abi/erc20.json";
+import abiWoofy from "../abi/woofy.json";
+
 import NumericInput from "../components/NumericInput";
 
 const YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
-const WOOFY = "0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6";
+const WOOFY = "0xD0660cD418a64a1d44E9214ad8e459324D8157f1";
+
 const TEN = new BigNumber(10);
 const MAX = new BigNumber(2).pow(256).minus(1);
 
@@ -41,6 +45,9 @@ export default function Home() {
   const [userBalanceWoofy, setUserBalanceWoofy] = useState(0);
   const [userAllowanceYfi, setUserAllowanceYfi] = useState(0);
 
+  const [isApproving, setIsApproving] = useState(false);
+  const [isSwapping, setIsSwapping] = useState(false);
+
   const yfi = useMemo(
     () => ({
       name: "YFI",
@@ -50,7 +57,7 @@ export default function Home() {
       balance: new BigNumber(userBalanceYfi.toString()),
       allowance: new BigNumber(userAllowanceYfi.toString()),
     }),
-    [userBalanceYfi]
+    [userBalanceYfi, userAllowanceYfi]
   );
 
   const woofy = useMemo(
@@ -80,31 +87,10 @@ export default function Home() {
     [value, fromToken]
   );
 
-  const inputValid = useMemo(
-    () => !active || !input.gt(fromToken.balance),
-    [active, input, fromToken]
-  );
-
-  const needsApproval = useMemo(
-    () => fromToken.name !== "WOOFY",
-    [active, input, fromToken]
-  );
-
-  console.log(fromToken, needsApproval);
-
-  const approveValid = useMemo(
-    () => input.lte(fromToken.balance) && input.gt(0),
-    [input, fromToken]
-  );
-
-  const swapValid = useMemo(
-    () => input.lte(fromToken.allowance) && approveValid,
-    [input, fromToken, approveValid]
-  );
-
   const output = useMemo(() => input, [input]);
 
   useEffect(() => {
+    console.log("RELOADED");
     if (active && library && account) {
       const yfiContract = new Contract(YFI, abiErc20, library);
       const woofyContract = new Contract(WOOFY, abiErc20, library);
@@ -118,7 +104,37 @@ export default function Home() {
       setUserBalanceWoofy(0);
       setUserAllowanceYfi(0);
     }
-  }, [active, library, account]);
+  }, [active, library, account, isApproving, isSwapping]);
+
+  const inputValid = useMemo(
+    () => !active || !input.gt(fromToken.balance),
+    [active, input, fromToken]
+  );
+
+  const needsApproval = useMemo(
+    () => fromToken.name !== "WOOFY",
+    [active, input, fromToken]
+  );
+
+  const approveValid = useMemo(
+    () =>
+      input.lte(fromToken.balance) &&
+      input.gt(0) &&
+      input.gte(fromToken.allowance),
+    [input, fromToken]
+  );
+
+  const swapValid = useMemo(
+    () =>
+      input.lte(fromToken.balance) &&
+      input.gt(0) &&
+      input.lte(fromToken.allowance),
+    [input, fromToken, approveValid]
+  );
+
+  const max = useCallback(() => {
+    setValue(fromToken.balance.div(TEN.pow(fromToken.decimals)).toFixed());
+  }, [fromToken, setValue]);
 
   const approve = useCallback(() => {
     const fromContract = new Contract(
@@ -126,8 +142,44 @@ export default function Home() {
       abiErc20,
       library.getSigner(account)
     );
-    fromContract.approve(toToken.address);
+    setIsApproving(true);
+    fromContract
+      .approve(toToken.address, MAX.toFixed())
+      .catch(() => setIsApproving(false))
+      .then((tx) => tx.wait())
+      .catch(() => setIsApproving(false))
+      .then(() => setIsApproving(false));
   }, [fromToken, toToken, library, account]);
+
+  const woof = useCallback(() => {
+    const woofyContract = new Contract(
+      woofy.address,
+      abiWoofy,
+      library.getSigner(account)
+    );
+    setIsSwapping(true);
+    woofyContract.functions["woof(uint256)"](input.toFixed())
+      .catch(() => setIsSwapping(false))
+      .then((tx) => tx.wait())
+      .catch(() => setIsSwapping(false))
+      .then(() => setIsSwapping(false));
+  }, [fromToken, toToken, library, account, input]);
+
+  const unwoof = useCallback(() => {
+    const woofyContract = new Contract(
+      woofy.address,
+      abiWoofy,
+      library.getSigner(account)
+    );
+    setIsSwapping(true);
+    woofyContract.functions["unwoof(uint256)"](input.toFixed())
+      .catch(() => setIsSwapping(false))
+      .then((tx) => tx.wait())
+      .catch(() => setIsSwapping(false))
+      .then(() => setIsSwapping(false));
+  }, [woofy, toToken, library, account, input]);
+
+  const swap = useMemo(() => (isWrap ? woof : unwoof), [isWrap, woof, unwoof]);
 
   return (
     <Box
@@ -183,9 +235,11 @@ export default function Home() {
                     <Stack spacing={2}>
                       <Text fontSize="sm">
                         <span>Balance: </span>
-                        {fromToken.balance.gt(0)
-                          ? formatUnits(fromToken.balance, fromToken.decimals)
-                          : "-"}
+                        <Link onClick={max}>
+                          {fromToken.balance.gt(0)
+                            ? formatUnits(fromToken.balance, fromToken.decimals)
+                            : "-"}
+                        </Link>
                       </Text>
                       <NumericInput
                         value={value}
@@ -213,7 +267,7 @@ export default function Home() {
                       <Text fontSize="sm">
                         <span>Balance: </span>
                         {toToken.balance.gt(0)
-                          ? formatUnits(fromToken.balance, fromToken.decimals)
+                          ? formatUnits(toToken.balance, toToken.decimals)
                           : "-"}
                       </Text>
                       <NumericInput
@@ -234,6 +288,8 @@ export default function Home() {
                       colorScheme="blackAlpha"
                       size="lg"
                       disabled={!approveValid}
+                      isLoading={isApproving}
+                      onClick={approve}
                     >
                       Approve
                     </Button>
@@ -243,6 +299,8 @@ export default function Home() {
                     colorScheme="blackAlpha"
                     size="lg"
                     disabled={!swapValid}
+                    isLoading={isSwapping}
+                    onClick={swap}
                   >
                     {isWrap ? "Woof" : "Unwoof"}
                   </Button>
