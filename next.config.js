@@ -6,6 +6,6 @@ module.exports = {
       process.env.VERCEL_GITHUB_COMMIT_SHA ||
       process.env.GITHUB_SHA ||
       "master",
-    BLOCKNATIVE_KEY: "5e6298d7-6c07-4571-87a1-e11b2fb6d6ce",
+    BLOCKNATIVE_KEY: "d83998fd-9c10-4dda-8f69-39e41b6e5f52",
   },
 };

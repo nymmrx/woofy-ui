@@ -65,7 +65,7 @@ export default function Home() {
       name: "WOOFY",
       address: WOOFY,
       image: "/tokens/WOOFY.png",
-      decimals: 9,
+      decimals: 12,
       balance: new BigNumber(userBalanceWoofy.toString()),
       allowance: MAX,
     }),
