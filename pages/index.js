@@ -17,7 +17,7 @@ import {
   Flex,
 } from "@chakra-ui/layout";
 import { Button, ButtonGroup } from "@chakra-ui/button";
-import { ArrowDownIcon, ArrowRightIcon, Icon } from "@chakra-ui/icons";
+import { ArrowDownIcon } from "@chakra-ui/icons";
 
 import Header from "../components/Header";
 
@@ -395,6 +395,7 @@ export default function Home() {
             </Stack>
           </Container>
         </Center>
+        <Box p="2"></Box>
       </Stack>
     </Box>
   );

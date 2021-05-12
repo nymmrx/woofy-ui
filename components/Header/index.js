@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { Contract } from "@ethersproject/contracts";
 
-import { Text, Box, HStack, Container } from "@chakra-ui/layout";
+import { Text, Box, HStack, Container, Center } from "@chakra-ui/layout";
 import { Button, ButtonGroup } from "@chakra-ui/button";
 
 import { useWeb3 } from "../../helpers/web3";
@@ -13,7 +14,7 @@ import abiErc20 from "../../abi/erc20.json";
 import { formatUnits } from "../../helpers/units";
 
 const YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
-const WOOFY = "0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6";
+const WOOFY = "0xD0660cD418a64a1d44E9214ad8e459324D8157f1";
 
 export default function Header() {
   const { active, activate, deactivate, account, pending, library } = useWeb3();
@@ -33,19 +34,37 @@ export default function Header() {
     }
   }, [active, library, account]);
 
+  const [userDisplayToken, setUserDisplayToken] = useState(true);
+  const toggleUserDisplayToken = useCallback(
+    () => setUserDisplayToken(!userDisplayToken),
+    [setUserDisplayToken, userDisplayToken]
+  );
+
+  const displayBalance = useMemo(
+    () =>
+      userDisplayToken
+        ? `${formatUnits(userBalanceYfi, 18)} YFI`
+        : `${formatUnits(userBalanceWoofy, 9)} WOOFY`,
+    [userDisplayToken, userBalanceYfi, userBalanceWoofy]
+  );
+
   return (
     <Container maxW="container.xl">
       <HStack py={5} wrap="wrap" spacing={0}>
-        <Box flexGrow={1}>
-          <Link href="/">
-            <a>
-              <Text fontSize="6xl" fontWeight="extrabold">
+        <Link href="/">
+          <a>
+            <HStack spacing={2}>
+              <Text fontSize="5xl" fontWeight="extrabold">
                 woofy
               </Text>
-            </a>
-          </Link>
-        </Box>
-        <Box flexShrink={1}>
+              <Center>
+                <Image src="/tokens/WOOFY.svg" width={32} height={32} />
+              </Center>
+            </HStack>
+          </a>
+        </Link>
+        <Box flexGrow={1}></Box>
+        <Box>
           {!active && (
             <Button
               colorScheme="blackAlpha"
@@ -58,8 +77,8 @@ export default function Header() {
           )}
           {active && (
             <ButtonGroup isAttached boxShadow="sm">
-              <Button colorScheme="blackAlpha">
-                {formatUnits(userBalanceYfi, 18)} YFI
+              <Button colorScheme="blackAlpha" onClick={toggleUserDisplayToken}>
+                {displayBalance}
               </Button>
               <Button
                 colorScheme="whiteAlpha"

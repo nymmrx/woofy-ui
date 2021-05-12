@@ -60,7 +60,7 @@ export default function Home() {
             </SimpleGrid>
           </Container>
         </Center>
-        <Box p="5"></Box>
+        <Box p="2"></Box>
       </Stack>
     </Box>
   );
