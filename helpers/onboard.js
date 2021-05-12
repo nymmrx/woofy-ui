@@ -6,6 +6,36 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Web3Context } from "./web3";
 
 const NetworkId = 1;
+const rpcUrl = process.env.WEB3_PROVIDER_HTTPS;
+
+const wallets = [
+  { walletName: "metamask" },
+  {
+    walletName: "walletConnect",
+    rpc: {
+      1: rpcUrl,
+    },
+  },
+  {
+    walletName: "ledger",
+    rpcUrl,
+  },
+  { walletName: "coinbase" },
+  { walletName: "status" },
+  {
+    walletName: "lattice",
+    appName: "Yearn Finance",
+    rpcUrl,
+  },
+  { walletName: "walletLink", rpcUrl },
+  { walletName: "torus" },
+  { walletName: "authereum", disableNotifications: true },
+  { walletName: "trust", rpcUrl },
+  { walletName: "opera" },
+  { walletName: "operaTouch" },
+  { walletName: "imToken", rpcUrl },
+  { walletName: "meetone" },
+];
 
 export default function Web3ContextProvider({ children }) {
   const [active, setActive] = useState(false);
@@ -19,6 +49,9 @@ export default function Web3ContextProvider({ children }) {
       Onboard({
         dappId: process.env.BLOCKNATIVE_KEY,
         networkId: NetworkId,
+        walletSelect: {
+          wallets,
+        },
         subscriptions: {
           wallet: (wallet) => {
             if (wallet.provider) {

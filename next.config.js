@@ -7,5 +7,7 @@ module.exports = {
       process.env.GITHUB_SHA ||
       "master",
     BLOCKNATIVE_KEY: "d83998fd-9c10-4dda-8f69-39e41b6e5f52",
+    WEB3_PROVIDER_HTTPS:
+      "https://mainnet.infura.io/v3/8763dd60f7d24aac89e892522f7dfa0a",
   },
 };

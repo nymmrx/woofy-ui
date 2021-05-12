@@ -65,7 +65,7 @@ export default function Header() {
         </Link>
         <Box flexGrow={1}></Box>
         <Box>
-          {!active && (
+          {(!active || !account) && (
             <Button
               colorScheme="blackAlpha"
               boxShadow="sm"
@@ -75,7 +75,7 @@ export default function Header() {
               Connect to a wallet
             </Button>
           )}
-          {active && (
+          {active && account && (
             <ButtonGroup isAttached boxShadow="sm">
               <Button colorScheme="blackAlpha" onClick={toggleUserDisplayToken}>
                 {displayBalance}
