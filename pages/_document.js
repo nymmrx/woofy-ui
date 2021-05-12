@@ -13,6 +13,12 @@ export default class WoofyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          <script
+            async
+            defer
+            data-domain="woofy.finance"
+            src="https://analytics.nymm.app/js/plausible.js"
+          ></script>
         </body>
       </Html>
     );
