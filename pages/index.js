@@ -28,6 +28,7 @@ import abiErc20 from "../abi/erc20.json";
 import abiWoofy from "../abi/woofy.json";
 
 import NumericInput from "../components/NumericInput";
+import { usePlausible } from "next-plausible";
 
 const YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
 const WOOFY = "0xD0660cD418a64a1d44E9214ad8e459324D8157f1";
@@ -40,6 +41,7 @@ export default function Home() {
   const isWrap = useMemo(() => page === "wrap", [page]);
   const isUnwrap = useMemo(() => page === "unwrap", [page]);
 
+  const plausible = usePlausible();
   const { active, account, library, provider } = useWeb3();
 
   const [userBalanceYfi, setUserBalanceYfi] = useState(0);
@@ -93,7 +95,6 @@ export default function Home() {
   const output = useMemo(() => input, [input]);
 
   useEffect(() => {
-    console.log("RELOADED");
     if (active && library && account) {
       const yfiContract = new Contract(YFI, abiErc20, library);
       const woofyContract = new Contract(WOOFY, abiErc20, library);
@@ -166,6 +167,7 @@ export default function Home() {
       .then((tx) => tx.wait())
       .catch(() => setIsSwapping(false))
       .then(() => setIsSwapping(false));
+    plausible("Woof", { props: input.toFixed() });
   }, [fromToken, toToken, library, account, input]);
 
   const unwoof = useCallback(() => {
@@ -180,6 +182,7 @@ export default function Home() {
       .then((tx) => tx.wait())
       .catch(() => setIsSwapping(false))
       .then(() => setIsSwapping(false));
+    plausible("Unwoof", { props: input.toFixed() });
   }, [woofy, toToken, library, account, input]);
 
   const swap = useMemo(() => (isWrap ? woof : unwoof), [isWrap, woof, unwoof]);
@@ -374,9 +377,12 @@ export default function Home() {
                   <HStack wrap="wrap" spacing={0}>
                     <Box flexGrow={1}>
                       <Text>
-                        Trade on{" "}
                         <Link href="https://matcha.xyz/markets/0xd0660cd418a64a1d44e9214ad8e459324d8157f1/ETH">
-                          🍵 Matcha
+                          🍵 Trade
+                        </Link>
+                        <span> / </span>
+                        <Link href="https://docs.yearn.finance/products/woofy">
+                          📃 Docs
                         </Link>
                       </Text>
                     </Box>
