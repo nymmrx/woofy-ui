@@ -207,11 +207,7 @@ export default function Home() {
   );
 
   return (
-    <Box
-      minH="100vh"
-      bgGradient="linear(to-l, pink.400,blue.500)"
-      color="white"
-    >
+    <Box minH="100vh" color="white">
       <Head>
         <title>woofy</title>
       </Head>

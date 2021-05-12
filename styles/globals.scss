@@ -10,6 +10,22 @@ body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
     Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   height: 100%;
+  background-image: linear-gradient(
+    to left,
+    var(--chakra-colors-pink-400),
+    var(--chakra-colors-blue-500)
+  ) !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  overscroll-behavior: none !important;
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
+  overflow: auto;
 }
 
 #__next {

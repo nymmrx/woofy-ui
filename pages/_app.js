@@ -10,7 +10,7 @@ const theme = extendTheme({
   },
 });
 
-function woofy({ Component, pageProps }) {
+export default function WoofyApp({ Component, pageProps }) {
   return (
     <ChakraProvider theme={theme}>
       <Web3ContextProvider>
@@ -19,4 +19,3 @@ function woofy({ Component, pageProps }) {
     </ChakraProvider>
   );
 }
-export default woofy;
