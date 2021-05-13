@@ -167,7 +167,7 @@ export default function Home() {
       .then((tx) => tx.wait())
       .catch(() => setIsSwapping(false))
       .then(() => setIsSwapping(false));
-    plausible("Woof", { props: input.toFixed() });
+    plausible("Woof", { props: { amount: input.toFixed() } });
   }, [fromToken, toToken, library, account, input]);
 
   const unwoof = useCallback(() => {
@@ -182,7 +182,7 @@ export default function Home() {
       .then((tx) => tx.wait())
       .catch(() => setIsSwapping(false))
       .then(() => setIsSwapping(false));
-    plausible("Unwoof", { props: input.toFixed() });
+    plausible("Unwoof", { props: { amount: input.toFixed() } });
   }, [woofy, toToken, library, account, input]);
 
   const swap = useMemo(() => (isWrap ? woof : unwoof), [isWrap, woof, unwoof]);
