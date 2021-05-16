@@ -10,4 +10,8 @@ module.exports = {
     WEB3_PROVIDER_HTTPS:
       "https://mainnet.infura.io/v3/8763dd60f7d24aac89e892522f7dfa0a",
   },
+  images: {
+    loader: "imgix",
+    path: "",
+  },
 };
