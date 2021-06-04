@@ -381,7 +381,7 @@ export default function Home() {
                           🍵 Trade
                         </Link>
                         <span> / </span>
-                        <Link href="https://docs.yearn.finance/products/woofy">
+                        <Link href="https://docs.yearn.finance/yearn-finance/woofy">
                           📃 Docs
                         </Link>
                       </Text>
