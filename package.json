@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-0",
-    "prettier": "^2.3.0"
+    "prettier": "^2.3.0",
+    "serve-handler": "^6.1.3"
   }
 }
